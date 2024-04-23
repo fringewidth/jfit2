@@ -1,29 +1,50 @@
 package jfit;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class CSVFile {
+    private File file;
+    private FileWriter writer;
 
     public CSVFile(String path) {
-        // TODO Auto-generated constructor stub
+        this.file = new File(path);
+        try {
+            if (!file.createNewFile())
+                throw new IllegalArgumentException("File already exists");
+            this.writer = new FileWriter(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void addRows(String string) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addRows'");
-    }
-
-    public void createRows(String string) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createRows'");
+    public void defineRows(String... rows) {
+        if (file.length() != 0)
+            throw new IllegalArgumentException("File already has rows defined");
+        addRows(rows);
     }
 
     public void addRows(String... cells) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addRows'");
+        for (int i = 0; i < cells.length; i++) {
+            try {
+                if (i == cells.length - 1)
+                    writer.write(cells[i] + "\n");
+                else
+                    writer.write(cells[i] + ",");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void closeFile() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'closeFile'");
+        try {
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // TODO: Delete file
     }
-
 }
