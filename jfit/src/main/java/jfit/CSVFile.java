@@ -12,7 +12,8 @@ public class CSVFile {
         this.file = new File(path);
         try {
             if (!file.createNewFile())
-                throw new IllegalArgumentException("File already exists");
+                // TODO: Change this to an IllegalArgumentException
+                System.out.println("File already exists");
             this.writer = new FileWriter(file);
         } catch (IOException e) {
             e.printStackTrace();
@@ -28,10 +29,12 @@ public class CSVFile {
     public void addRows(String... cells) {
         for (int i = 0; i < cells.length; i++) {
             try {
-                if (i == cells.length - 1)
+                if (i == cells.length - 1) {
                     writer.write(cells[i] + "\n");
-                else
+                } else {
                     writer.write(cells[i] + ",");
+                }
+                writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -40,11 +43,10 @@ public class CSVFile {
 
     public void closeFile() {
         try {
-            writer.flush();
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // TODO: Delete file
+        file.delete();
     }
 }

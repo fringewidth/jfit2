@@ -1,14 +1,16 @@
 package jfit;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 
 public class Main {
     private static int start = 1;
     private static int end = 10000;
     private static int increment = 100;
-    private static boolean sorted = false;
+    private static boolean sorted = true;
 
-    private static String csvPath = "../runningTimes.csv";
+    private static String csvPath = "runningTimes.csv";
 
     public static void __method(long[] array) {
         // your code here
@@ -25,17 +27,26 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        System.out.println("Creating CSV file...");
         CSVFile runningTimes = new CSVFile(csvPath);
+        System.out.println("Generating running times...");
         Gen gen = new Gen(runningTimes, start, end, increment, sorted);
         gen.genCSV();
-        callPy("../analyse.py", csvPath);
+        System.out.println("Running Python script...");
+        callPy("analyse.py", csvPath);
         runningTimes.closeFile();
     }
 
     private static void callPy(String pyPath, String csvPath) {
-        ProcessBuilder processBuilder = new ProcessBuilder("python3", pyPath, csvPath);
+        ProcessBuilder processBuilder = new ProcessBuilder("python", pyPath, csvPath);
         try {
+            processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
             process.waitFor();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

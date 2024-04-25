@@ -33,8 +33,8 @@ public class Gen {
         if (this.increment < 1) {
             throw new IllegalArgumentException("Increment must be positive and non-zero");
         }
-        if (this.increment < this.end - this.start) {
-            throw new IllegalArgumentException("Increment must be greater than the difference between start and end");
+        if (this.increment > this.end - this.start) {
+            throw new IllegalArgumentException("Increment must be lesser than the difference between start and end");
         }
     }
 
@@ -51,8 +51,8 @@ public class Gen {
     }
 
     public long[] measureRunningTimes() {
-        long[] runningTimes = new long[(this.end - this.start) / this.increment];
-        for (int i = this.start; i <= this.end; i += this.increment) {
+        long[] runningTimes = new long[(this.end - this.start) / this.increment + 1];
+        for (int i = this.start; i < this.end; i += this.increment) {
             long[] array = arrayGenerator(i);
             long startTime = System.nanoTime();
             Main.__method(array);
@@ -64,9 +64,9 @@ public class Gen {
 
     public void genCSV() {
         long[] runningTimes = measureRunningTimes();
-        outputCSV.createRows("Size,Running Time\n");
+        outputCSV.defineRows("Size", "Running Time");
         for (int i = 0; i < runningTimes.length; i++) {
-            outputCSV.addRows((i * this.increment + this.start), runningTimes[i]);
+            outputCSV.addRows(String.valueOf(i * this.increment + this.start), String.valueOf(runningTimes[i]));
         }
     }
 }
