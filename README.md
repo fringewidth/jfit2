@@ -22,7 +22,7 @@ I have the following requirements for jFit2:
 
 ## Plan of action
 
-- [ ] Basic PoC.
+- [x] Basic PoC.
 - [ ] Unit tests for correctness.
 - [ ] Refactoring
 - [ ] Improve UX.

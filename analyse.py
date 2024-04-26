@@ -16,7 +16,7 @@ def model_poly(n, a, b):
     return a * n ** b
 
 def model_exp(n, a, b):
-    return a * np.exp(b * n) if b * n < 300 else np.inf
+    return a * np.exp(n - b)# if a + b * n < 300 else np.inf
 
 # def model_factorial(n, a, b):
 #     return a * np.sqrt(2*np.pi*n)*np.power(n/np.exp(1), n) + b
@@ -39,7 +39,8 @@ def selective_fit(model, x, y):
     
     return curve_fit(model, x, y)
 
-def get_eq(model, params):
+def get_eq(model, params, acc=16):
+    params = [round(i, acc) for i in params]
     if model == 0: # logarithmic
         return f"$t = \log({params[0]} \cdot n) + {params[1]}$"
     
@@ -50,7 +51,7 @@ def get_eq(model, params):
         return f"$t = {params[0]} \cdot n^{{{params[1]}}}$"
     
     if model == 3: # exponential
-        return f"$t = {params[0]} \cdot e^{{{params[1]}\cdot b}}$"
+        return f"$t = {params[0]} \cdot e^n$"
 
 def main():
     print("Usage: python analyse.py <path_to_csv>")
@@ -60,7 +61,7 @@ def main():
     x = data.iloc[:, 0]
     y = data.iloc[:, 1]
 
-    models = [model_log, model_linearithmic, model_poly]
+    models = [model_log, model_linearithmic, model_poly, model_exp]
     params = [selective_fit(i,x,y)[0] for i in models]
     theos = [models[i](x, *params[i]) for i in range(len(models))]
     r2s = [r2_score(y, theos[i]) for i in range(len(models))]
@@ -69,11 +70,10 @@ def main():
     print("Best model: ", models[best_index].__name__)
     
     best_params = params[best_index]
-    best_eq = get_eq(best_index, best_params)
-
+    print("Fitted equation(TeX): ", get_eq(best_index, best_params))
     plt.scatter(x, y)
     plt.plot(x, theos[best_index], color='red')
-    plt.legend(["Measured Data", best_eq])
+    plt.legend(["Measured Data", get_eq(best_index, best_params, acc=4)])
     plt.show()
     
 if __name__ == '__main__':
