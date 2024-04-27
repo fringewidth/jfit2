@@ -1,80 +1,71 @@
 import sys
-from scipy.optimize import curve_fit
-from scipy import stats
-from matplotlib import pyplot as plt
-import pandas as pd
 import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
 
-def model_log(n, a, b):
+def logarithmic(n, a, b):
     return np.log(a*n) + b
 
-def model_linearithmic(n, a, b):
+def linearithmic(n, a, b):
     return a * n * np.log(n) + b
  
-def model_poly(n, a, b):
+def polynomial(n, a, b):
     return a * n ** b
 
-def model_exp(n, a, b):
-    return a * np.exp(n - b)# if a + b * n < 300 else np.inf
+def clean(data, cutoff = 1.5):
+    q1 = data.iloc[:, 1].quantile(0.25)
+    q3 = data.iloc[:, 1].quantile(0.75)
+    iqr = q3 - q1
+    data_cl = data[(data.iloc[:, 1] < (q3  + cutoff * iqr)) & (data.iloc[:, 1] > (q1 - cutoff * iqr))]
+    return data_cl
 
-# def model_factorial(n, a, b):
-#     return a * np.sqrt(2*np.pi*n)*np.power(n/np.exp(1), n) + b
-# # Not supported yet
-
-#  def model_linear(n, a, b):
-#      return a*n + b
-# # Extremely problematic since both log(n) and nlog(n) look linear. Not recommended
-
-
-def clean_data(data):
-    iqr = stats.iqr(data.iloc[:, 1])
-    q3 = np.percentile(data.iloc[:, 1], 75)
-    filtered_data = data[(data.iloc[:, 1] < q3 + 1.5*iqr)]
-    return filtered_data
+def smoothen(data, window = 16):
+    if data.shape[0] // 2 < window:
+        return data
+    data_sm = data.rolling(window=window).mean()
+    data_sm.dropna(inplace = True)
+    return data_sm
 
 def selective_fit(model, x, y):
-    if model == model_poly:
-        return curve_fit(model, x, y, bounds=((0, 1.5), (np.inf, np.inf)))
+    if model is logarithmic or model is linearithmic:
+        bounds = ([0, -np.inf], [np.inf, np.inf])
+    elif model is polynomial:
+        bounds = ([0, 1], [np.inf, np.inf])
     
-    return curve_fit(model, x, y)
+    return curve_fit(model, x, y, bounds=bounds)
 
-def get_eq(model, params, acc=16):
+def get_eq(model, params, acc = 16):
     params = [round(i, acc) for i in params]
-    if model == 0: # logarithmic
-        return f"$t = \log({params[0]} \cdot n) + {params[1]}$"
-    
-    if model == 1: # linearithmic
-        return f"$t = {params[0]} \cdot n \cdot \log(n) + {params[1]}$"
-    
-    if model == 2: # polynomial
-        return f"$t = {params[0]} \cdot n^{{{params[1]}}}$"
-    
-    if model == 3: # exponential
-        return f"$t = {params[0]} \cdot e^n$"
+    if model is logarithmic:
+        return f"t = log({params[0]}n) + {params[1]}"
+    elif model is linearithmic:
+        return f"t = {params[0]}nlog(n) + {params[1]}"
+    elif model is polynomial:
+        return f"t = {params[0]}n^({params[1]})"
 
 def main():
-    print("Usage: python analyse.py <path_to_csv>")
-    csv_path = sys.argv[1]
-    unf_data = pd.read_csv(csv_path)
-    data = clean_data(unf_data)
+    data = pd.read_csv("runningTimes.csv")
+    data_proc = smoothen(clean(data))
+    xp = data_proc.iloc[:, 0]
+    yp = data_proc.iloc[:, 1]
     x = data.iloc[:, 0]
     y = data.iloc[:, 1]
+    models = [logarithmic, linearithmic, polynomial]
+    params= [selective_fit(i, x, y)[0] for i in models]
+    coeff_det = [r2_score(y, models[i](x, *params[i])) for i in range(len(models))]
 
-    models = [model_log, model_linearithmic, model_poly, model_exp]
-    params = [selective_fit(i,x,y)[0] for i in models]
-    theos = [models[i](x, *params[i]) for i in range(len(models))]
-    r2s = [r2_score(y, theos[i]) for i in range(len(models))]
-
-    best_index = np.argmax(r2s)
+    best_index = np.argmax(coeff_det)
     print("Best model: ", models[best_index].__name__)
-    
-    best_params = params[best_index]
-    print("Fitted equation(TeX): ", get_eq(best_index, best_params))
-    plt.scatter(x, y)
-    plt.plot(x, theos[best_index], color='red')
-    plt.legend(["Measured Data", get_eq(best_index, best_params, acc=4)])
+    print(get_eq(models[best_index], params[best_index]))
+
+    plt.plot(x, models[best_index](x, *params[best_index]), color = 'red')
+    plt.legend([get_eq(models[best_index], params[best_index], 3)])
+    plt.scatter(x, y, color = 'gray')
+    plt.scatter(xp, yp)
     plt.show()
-    
-if __name__ == '__main__':
-    main()
+
+
+if __name__ == "__main__":
+    main() 
