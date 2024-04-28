@@ -14,8 +14,7 @@ The original jFit was my first software development project, and as a result has
 
 I have the following requirements for jFit2:
 
-- Support for inference of $O(n^k)$, $O(log(n))$, $O(nlog(n))$ and $O(k^n)$ runtime complexities for arrays.
-- Type flexibility on the arrays themselves.
+- Support for inference of $O(n^k)$, $k<4$ and $O(nlog(n))$ runtime complexities for arrays.
 - Correctness through testing.
 - Improved error detection and error handling
 - Better user experience.
