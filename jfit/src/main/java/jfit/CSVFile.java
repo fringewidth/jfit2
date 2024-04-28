@@ -53,8 +53,8 @@ public class CSVFile {
         checkIfOpen();
         if (cells.length > maxRows)
             throw new IllegalArgumentException("Row length cannot exceed number of columns");
-        if (maxRows == -1)
-            throw new IllegalArgumentException("Rows must be defined first");
+        // if (maxRows == -1) //covered by first if statement
+        // throw new IllegalArgumentException("Rows must be defined first");
         for (int i = 0; i < cells.length; i++) {
             try {
                 if (i == cells.length - 1) {

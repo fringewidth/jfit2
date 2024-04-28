@@ -20,6 +20,7 @@ public class GenTest {
 
     @Test
     public void incrementMustNotBeGreaterThanDifferenceBetweenStartAndEnd() {
+        // there are two hard things in computer science
         assertThrows(IllegalArgumentException.class, () -> new Gen(csvFile, 1, 10, 10));
     }
 
@@ -61,6 +62,7 @@ public class GenTest {
     }
 
     @Test
+    // there are two hard things in computer science
     public void numberOfRowsInGeneratedCSVMustBeDifferenceOfStartAndEndDividedByIncrement() {
         Gen gen = new Gen(csvFile, 1, 120, 3);
         gen.genCSV();
