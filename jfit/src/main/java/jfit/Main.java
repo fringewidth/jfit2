@@ -2,6 +2,9 @@ package jfit;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.io.BufferedReader;
 
 public class Main {
@@ -34,27 +37,32 @@ public class Main {
             Gen gen = new Gen(runningTimes, start, end, increment, sorted);
             gen.genCSV();
             System.out.println("Running Python script...");
-            callPy("analyse.py", csvPath);
+            String pyOp = callPy("analyse.py", csvPath);
+            System.out.println(pyOp);
             runningTimes.closeFile();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            return;
         }
     }
 
-    private static void callPy(String pyPath, String csvPath) {
-        ProcessBuilder processBuilder = new ProcessBuilder("python", pyPath, csvPath);
+    public static String callPy(String pyPath, String... args) {
+        String pyOp = "";
+        List<String> argsList = new ArrayList<>(Arrays.asList(args));
+        argsList.add(0, "python");
+        argsList.add(1, pyPath);
+        ProcessBuilder processBuilder = new ProcessBuilder(argsList);
         try {
             processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+                pyOp += line + "\n";
             }
             process.waitFor();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+        return pyOp;
     }
 }

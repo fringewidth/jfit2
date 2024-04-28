@@ -58,7 +58,7 @@ def main():
 
     best_index = np.argmax(coeff_det)
     print("Best model: ", models[best_index].__name__)
-    print(get_eq(models[best_index], params[best_index]))
+    print("Equation: ", get_eq(models[best_index], params[best_index]))
 
     plt.plot(x, models[best_index](x, *params[best_index]), color = 'red')
     plt.legend([get_eq(models[best_index], params[best_index], 3)])
