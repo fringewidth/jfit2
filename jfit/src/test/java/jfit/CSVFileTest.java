@@ -34,6 +34,7 @@ public class CSVFileTest {
         assertThrows(IllegalArgumentException.class, () -> {
             csvFile.defineColumns();
         });
+        csvFile.closeFile();
     }
 
     @Test
@@ -46,6 +47,7 @@ public class CSVFileTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        csvFile.closeFile();
     }
 
     @Test
