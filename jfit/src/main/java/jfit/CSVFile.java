@@ -49,4 +49,8 @@ public class CSVFile {
         }
         file.delete();
     }
+
+    public String getFileName() {
+        return file.getName();
+    }
 }

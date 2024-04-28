@@ -19,11 +19,11 @@ public class Gen {
         validateArgs();
     }
 
-    public Gen(CSVFile runningTimes, int start, int end, int increment, int size) throws IllegalArgumentException {
+    public Gen(CSVFile runningTimes, int start, int end, int increment) throws IllegalArgumentException {
         this(runningTimes, start, end, increment, false);
     }
 
-    public void validateArgs() throws IllegalArgumentException {
+    private void validateArgs() throws IllegalArgumentException {
         if (this.start < 1) {
             throw new IllegalArgumentException("Start length must be positive and non-zero");
         }
@@ -38,7 +38,7 @@ public class Gen {
         }
     }
 
-    public long[] arrayGenerator(int size) {
+    protected long[] arrayGenerator(int size) {
         Random random = new Random();
         long[] array = new long[size];
         for (int i = 0; i < size; i++) {
@@ -50,7 +50,7 @@ public class Gen {
         return array;
     }
 
-    public long[] measureRunningTimes() {
+    protected long[] measureRunningTimes() {
         long[] runningTimes = new long[(this.end - this.start) / this.increment + 1];
         for (int i = this.start; i < this.end; i += this.increment) {
             long[] array = arrayGenerator(i);
