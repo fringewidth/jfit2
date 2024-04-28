@@ -28,13 +28,18 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Creating CSV file...");
-        CSVFile runningTimes = new CSVFile(csvPath);
-        System.out.println("Generating running times...");
-        Gen gen = new Gen(runningTimes, start, end, increment, sorted);
-        gen.genCSV();
-        System.out.println("Running Python script...");
-        callPy("analyse.py", csvPath);
-        runningTimes.closeFile();
+        try {
+            CSVFile runningTimes = new CSVFile(csvPath);
+            System.out.println("Generating running times...");
+            Gen gen = new Gen(runningTimes, start, end, increment, sorted);
+            gen.genCSV();
+            System.out.println("Running Python script...");
+            callPy("analyse.py", csvPath);
+            runningTimes.closeFile();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
     }
 
     private static void callPy(String pyPath, String csvPath) {

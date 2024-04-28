@@ -64,7 +64,7 @@ public class Gen {
 
     public void genCSV() {
         long[] runningTimes = measureRunningTimes();
-        outputCSV.defineRows("Size", "Running Time");
+        outputCSV.defineColumns("Size", "Running Time");
         for (int i = 0; i < runningTimes.length; i++) {
             outputCSV.addRows(String.valueOf(i * this.increment + this.start), String.valueOf(runningTimes[i]));
         }
