@@ -3,7 +3,6 @@ package jfit;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -46,7 +46,7 @@ def get_eq(model, params, acc = 16):
         return f"t = {params[0]}n^({params[1]})"
 
 def main():
-    data = pd.read_csv("runningTimes.csv")
+    data = pd.read_csv(sys.argv[1])
     data_proc = smoothen(clean(data))
     xp = data_proc.iloc[:, 0]
     yp = data_proc.iloc[:, 1]
