@@ -1,4 +1,5 @@
 # jfit2
+![JFit Demo](https://github.com/user-attachments/assets/23b4800c-b457-46a1-bdce-e7b3040914e8)
 
 jFit2 is a fully tested Java utility for emprical complexity analysis. It's envisioned as an improvement over [it's predecessor](https://github.com/fringewidth/jfit).
 
